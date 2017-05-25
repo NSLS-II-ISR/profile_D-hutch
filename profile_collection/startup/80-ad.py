@@ -11,11 +11,11 @@ from ophyd.areadetector.filestore_mixins import (FileStoreTIFFIterativeWrite,
 from ophyd import Component as Cpt, Signal
 
 
-
 class StandardProsilica(SingleTrigger, ProsilicaDetector):
-    # tiff = Cpt(TIFFPluginWithFileStore,
-    #           suffix='TIFF1:',
-    #           write_path_template='/XF11ID/data/')
+    # tiff = Cpt(FileStoreIterativeWrite,
+    #            suffix='TIFF1:',
+    #            write_path_template='/XF04ID/data/%Y/%m/%d',
+    #            root='/XF04ID/data/')
     image = Cpt(ImagePlugin, 'image1:')
     stats1 = Cpt(StatsPlugin, 'Stats1:')
     stats2 = Cpt(StatsPlugin, 'Stats2:')
@@ -28,7 +28,7 @@ class StandardProsilica(SingleTrigger, ProsilicaDetector):
     roi3 = Cpt(ROIPlugin, 'ROI3:')
     roi4 = Cpt(ROIPlugin, 'ROI4:')
     proc1 = Cpt(ProcessPlugin, 'Proc1:')
-    
+
 ccam = StandardProsilica('XF:04IDC-BI:1{Scr:3}', name='ccam')
 vbd1 = StandardProsilica('XF:04IDA-BI:1{Scr:1}', name='vbd1')
 vbd2 = StandardProsilica('XF:04IDA-BI:1{Scr:2}', name='vbd2')
