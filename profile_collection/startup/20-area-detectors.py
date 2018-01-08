@@ -31,7 +31,8 @@ class EigerSimulatedFilePlugin(Device, FileStoreBase):
         set_and_wait(self.file_path, write_path)
         set_and_wait(self.file_write_name_pattern, '{}_$id'.format(res_uid))
         super().stage()
-        fn = (PurePath(self.file_path.get()) / res_uid).relative_to(self.reg_root)
+        fn = (PurePath(self.file_path.get()) /
+              res_uid).relative_to(self.reg_root)
         ipf = int(self.file_write_images_per_file.get())
         # logger.debug("Inserting resource with filename %s", fn)
         self._resource = self._reg.register_resource(
@@ -69,8 +70,10 @@ class EigerBase(AreaDetector):
     det_distance = ADComponent(EpicsSignalWithRBV, 'cam1:DetDist')
     threshold_energy = ADComponent(EpicsSignalWithRBV, 'cam1:ThresholdEnergy')
     photon_energy = ADComponent(EpicsSignalWithRBV, 'cam1:PhotonEnergy')
-    manual_trigger = ADComponent(EpicsSignalWithRBV, 'cam1:ManualTrigger')  # the checkbox
-    special_trigger_button = ADComponent(EpicsSignal, 'cam1:Trigger')  # the button next to 'Start' and 'Stop'
+    # the checkbox
+    manual_trigger = ADComponent(EpicsSignalWithRBV, 'cam1:ManualTrigger')
+    # the button next to 'Start' and 'Stop'
+    special_trigger_button = ADComponent(EpicsSignal, 'cam1:Trigger')
     image = Cpt(ImagePlugin, 'image1:')
     stats1 = Cpt(StatsPlugin, 'Stats1:')
     stats2 = Cpt(StatsPlugin, 'Stats2:')
@@ -101,7 +104,8 @@ class EigerBase(AreaDetector):
     @property
     def hints(self):
         if self._hints is None:
-            return {'fields': [self.stats2.total.name]}  # i.e. ["eiger4m_stats1_total"]
+            # i.e. ["eiger4m_stats1_total"]
+            return {'fields': [self.stats2.total.name]}
         else:
             return self._hints
 
@@ -111,7 +115,8 @@ class EigerBase(AreaDetector):
             read_keys = list(self.describe())
             for key in val.get('fields', []):
                 if key not in read_keys:
-                    raise ValueError("{} is not allowed -- must be one of {}".format(key, read_keys))
+                    raise ValueError("{} is not allowed -- must be one of {}"
+                                     .format(key, read_keys))
         self._hints = val
 
 
@@ -152,4 +157,3 @@ eiger1m_single = EigerSingleTrigger('XF:04IDD-ES{Det:Eig1M}',
 set_eiger_defaults(eiger1m_single)
 
 db.reg.register_handler('AD_EIGER2', EigerHandlerDask, overwrite=True)
-
