@@ -1,14 +1,8 @@
-import time as ttime  # tea time
-from datetime import datetime
-from ophyd import (ProsilicaDetector, SingleTrigger, TIFFPlugin,
-                   ImagePlugin, StatsPlugin, DetectorBase, HDF5Plugin,
-                   AreaDetector, EpicsSignal, EpicsSignalRO, ROIPlugin,
+from ophyd import (ProsilicaDetector, SingleTrigger,
+                   ImagePlugin, StatsPlugin,
+                   ROIPlugin,
                    TransformPlugin, ProcessPlugin)
-from ophyd.areadetector.cam import AreaDetectorCam
-from ophyd.areadetector.base import ADComponent, EpicsSignalWithRBV
-from ophyd.areadetector.filestore_mixins import (FileStoreTIFFIterativeWrite,
-                                                 FileStoreBase, new_short_uid)
-from ophyd import Component as Cpt, Signal
+from ophyd import Component as Cpt
 
 
 class StandardProsilica(SingleTrigger, ProsilicaDetector):
@@ -28,6 +22,7 @@ class StandardProsilica(SingleTrigger, ProsilicaDetector):
     roi3 = Cpt(ROIPlugin, 'ROI3:')
     roi4 = Cpt(ROIPlugin, 'ROI4:')
     proc1 = Cpt(ProcessPlugin, 'Proc1:')
+
 
 ccam = StandardProsilica('XF:04IDC-BI:1{Scr:3}', name='ccam')
 vbd1 = StandardProsilica('XF:04IDA-BI:1{Scr:1}', name='vbd1')
