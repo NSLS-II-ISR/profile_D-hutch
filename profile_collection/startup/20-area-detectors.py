@@ -1,15 +1,10 @@
 from types import SimpleNamespace
 from datetime import datetime
-from ophyd import (SingleTrigger, ImagePlugin,
-                   StatsPlugin, DetectorBase, HDF5Plugin,
-                   AreaDetector, EpicsSignal, EpicsSignalRO, ROIPlugin,
-                   TransformPlugin, ProcessPlugin, Device)
-from ophyd.areadetector.cam import AreaDetectorCam
+from ophyd import (SingleTrigger, ImagePlugin, StatsPlugin, AreaDetector,
+                   EpicsSignal, EpicsSignalRO, ROIPlugin, ProcessPlugin,
+                   Device)
 from ophyd.areadetector.base import ADComponent, EpicsSignalWithRBV
-from ophyd.areadetector.filestore_mixins import (FileStoreTIFFIterativeWrite,
-                                                 FileStoreHDF5IterativeWrite,
-                                                 FileStoreBase, new_short_uid,
-                                                 FileStoreIterativeWrite)
+from ophyd.areadetector.filestore_mixins import (FileStoreBase, new_short_uid)
 from ophyd import Component as Cpt, Signal
 from ophyd.utils import set_and_wait
 from pathlib import PurePath
@@ -37,7 +32,6 @@ class EigerSimulatedFilePlugin(Device, FileStoreBase):
         set_and_wait(self.file_write_name_pattern, '{}_$id'.format(res_uid))
         super().stage()
         fn = (PurePath(self.file_path.get()) / res_uid).relative_to(self.reg_root)
-
         ipf = int(self.file_write_images_per_file.get())
         # logger.debug("Inserting resource with filename %s", fn)
         self._resource = self._reg.register_resource(
