@@ -1,8 +1,4 @@
-import bluesky.plans as bp
-import bluesky.plan_stubs as bps
-import bluesky.preprocessors as bpp
-
-
+# bpp, bp bps already in namespace from 00-base.py
 def look_up_settings(E, station):
     return {dcm.th: 0}
 
