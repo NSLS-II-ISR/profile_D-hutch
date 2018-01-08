@@ -12,4 +12,5 @@ class DCM(Device):
     th2f = Cpt(EpicsMotor, '-Ax:th2f}Mtr')
     chi2f = Cpt(EpicsMotor, '-Ax:chi2f}Mtr')
 
+
 dcm = DCM('XF:04IDA-OP:1{Mono:DCM', name='dcm')

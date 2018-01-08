@@ -6,9 +6,10 @@ class MagDiff(Device):
     tth = Cpt(EpicsMotor, 'Ax:tth}Mtr')
     phi = Cpt(EpicsMotor, 'Ax:phi}Mtr')
     chi = Cpt(EpicsMotor, 'Ax:chi}Mtr')
-    
+
     ath = Cpt(EpicsMotor, 'Ax:ath}Mtr')
     atth = Cpt(EpicsMotor, 'Ax:atth}Mtr')
+
 
 class MagTable(Device):
     table_y1 = Cpt(EpicsMotor, 'Ax:TblY1}Mtr')
@@ -22,7 +23,6 @@ class MagTable(Device):
 
     stag_y = Cpt(EpicsMotor, 'Ax:StagY}Mtr')
 
-    
-    
+
 mag_table = MagTable('XF:04IDC-ES:1{Dif:Mag-', name='mag_table')
 mag_diff = MagDiff('XF:04IDC-ES:1{Dif:Mag-', name='mag_diff')
