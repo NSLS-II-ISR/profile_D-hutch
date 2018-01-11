@@ -1,2 +1,2 @@
-# isr_profiles
+# ISR collection profile
 Profiles for data collection at ISR
