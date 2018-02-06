@@ -8,3 +8,7 @@ def adjust_energy_sketch(E, station):
     settings = look_up_setting(E, station)
     for d, v in settings.items():
         yield from bps.mv(d, v)
+
+def default_scan():
+    yield from bp.scan([eiger1m_single], th, 0, 1, 10, md={'purpose': 'test ...'})
+
