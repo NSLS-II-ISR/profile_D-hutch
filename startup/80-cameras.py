@@ -6,6 +6,10 @@ from ophyd import Component as Cpt
 
 
 class StandardProsilica(SingleTrigger, ProsilicaDetector):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('labels', ['cameras'])
+        super().__init__(*args, **kwargs)
+
     # tiff = Cpt(FileStoreIterativeWrite,
     #            suffix='TIFF1:',
     #            write_path_template='/XF04ID/data/%Y/%m/%d',

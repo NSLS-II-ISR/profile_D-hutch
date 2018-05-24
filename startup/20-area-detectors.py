@@ -54,12 +54,16 @@ class EigerBase(AreaDetector):
 
     Use EigerSingleTrigger or EigerFastTrigger below.
     """
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('labels', ['detectors', 'cameras'])
+        super().__init__(*args, **kwargs)
+
 
     num_triggers = ADComponent(EpicsSignalWithRBV, 'cam1:NumTriggers')
     file = Cpt(EigerSimulatedFilePlugin, suffix='cam1:',
                write_path_template='/GPFS/xf04id/DATA/Eiger1M/%Y/%m/%d/',
-               root='/GPFS/xf04id/',
-               reg=db.reg)
+               root='/GPFS/xf04id/')
+
     beam_center_x = ADComponent(EpicsSignalWithRBV, 'cam1:BeamX')
     beam_center_y = ADComponent(EpicsSignalWithRBV, 'cam1:BeamY')
     wavelength = ADComponent(EpicsSignalWithRBV, 'cam1:Wavelength')
@@ -133,6 +137,7 @@ def set_eiger_defaults(eiger):
 # Eiger 1M using internal trigger
 eiger1m_single = EigerSingleTrigger('XF:04IDD-ES{Det:Eig1M}',
                                     name='eiger1m_single')
+
 set_eiger_defaults(eiger1m_single)
 
 db.reg.register_handler('AD_EIGER2', EigerHandlerDask, overwrite=True)
