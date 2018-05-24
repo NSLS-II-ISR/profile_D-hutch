@@ -24,6 +24,7 @@ class EigerSimulatedFilePlugin(Device, FileStoreBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._datum_kwargs_map = dict()  # store kwargs for each uid
+        self.filestore_spec = 'AD_EIGER2'
 
     def stage(self):
         res_uid = new_short_uid()
@@ -31,14 +32,12 @@ class EigerSimulatedFilePlugin(Device, FileStoreBase):
         set_and_wait(self.file_path, write_path)
         set_and_wait(self.file_write_name_pattern, '{}_$id'.format(res_uid))
         super().stage()
-        fn = (PurePath(self.file_path.get()) /
-              res_uid).relative_to(self.reg_root)
+        fn = (PurePath(self.file_path.get()) / res_uid)
         ipf = int(self.file_write_images_per_file.get())
         # logger.debug("Inserting resource with filename %s", fn)
-        self._resource = self._reg.register_resource(
-            'AD_EIGER2',
-            str(self.reg_root), fn,
-            {'images_per_file': ipf})
+        self._fn = fn
+        res_kwargs = {'images_per_file': ipf}
+        self._generate_resource(res_kwargs)
 
     def generate_datum(self, key, timestamp, datum_kwargs):
         # The detector keeps its own counter which is uses label HDF5
