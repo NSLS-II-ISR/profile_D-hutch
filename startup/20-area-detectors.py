@@ -55,9 +55,6 @@ class EigerBase(AreaDetector):
 
     Use EigerSingleTrigger or EigerFastTrigger below.
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._hints = None
 
     num_triggers = ADComponent(EpicsSignalWithRBV, 'cam1:NumTriggers')
     file = Cpt(EigerSimulatedFilePlugin, suffix='cam1:',
@@ -101,24 +98,6 @@ class EigerBase(AreaDetector):
         set_and_wait(self.manual_trigger, 0)
         super().unstage()
 
-    @property
-    def hints(self):
-        if self._hints is None:
-            # i.e. ["eiger4m_stats1_total"]
-            return {'fields': [self.stats2.total.name]}
-        else:
-            return self._hints
-
-    @hints.setter
-    def hints(self, val):
-        if val is not None:
-            read_keys = list(self.describe())
-            for key in val.get('fields', []):
-                if key not in read_keys:
-                    raise ValueError("{} is not allowed -- must be one of {}"
-                                     .format(key, read_keys))
-        self._hints = val
-
 
 class EigerSingleTrigger(SingleTrigger, EigerBase):
     def __init__(self, *args, **kwargs):
@@ -149,6 +128,7 @@ def set_eiger_defaults(eiger):
     eiger.cam.read_attrs = []
     eiger.cam.configuration_attrs = ['acquire_time', 'acquire_period',
                                      'num_images']
+    eiger.stats2.total.kind = 'hinted'
 
 
 # Eiger 1M using internal trigger
@@ -157,3 +137,4 @@ eiger1m_single = EigerSingleTrigger('XF:04IDD-ES{Det:Eig1M}',
 set_eiger_defaults(eiger1m_single)
 
 db.reg.register_handler('AD_EIGER2', EigerHandlerDask, overwrite=True)
+

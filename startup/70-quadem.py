@@ -1,24 +1,31 @@
 from ophyd.quadem import QuadEM
 from ophyd import Signal
+from ophyd.areadetector import ADBase
+
+
+class QuadEMPort(ADBase):
+    port_name = Cpt(Signal, value='')
+
+    def __init__(self, port_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.port_name.put(port_name)
 
 
 class QuadEMWithPort(QuadEM):
-    port_name = Cpt(Signal, value='EM180')
+    conf = Cpt(QuadEMPort, port_name='EM180')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.stage_sigs.update([(self.acquire_mode, 'One-shot')  # single mode
-                                ])
+        self.stage_sigs.update([(self.acquire_mode, 'One-shot')])  # single mode
 
 
 # TODO talk to someone who understands this IOC about what is going on
 class QuadEMWithPortSS(QuadEM):
-    port_name = Cpt(Signal, value='EM180')
+    conf = Cpt(QuadEMPort, port_name='EM180')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.stage_sigs.update([(self.acquire_mode, 'Multiple')  # single mode
-                                ])
+        self.stage_sigs.update([(self.acquire_mode, 'Multiple')])  # single mode
 
 
 class SSASlit(Device):
