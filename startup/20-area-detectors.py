@@ -8,7 +8,6 @@ from ophyd.areadetector.filestore_mixins import (FileStoreBase, new_short_uid)
 from ophyd import Component as Cpt, Signal
 from ophyd.utils import set_and_wait
 from pathlib import PurePath
-from eiger_io.fs_handler_dask import EigerHandlerDask
 
 
 class EigerSimulatedFilePlugin(Device, FileStoreBase):
@@ -139,6 +138,4 @@ eiger1m_single = EigerSingleTrigger('XF:04IDD-ES{Det:Eig1M}',
                                     name='eiger1m_single')
 
 set_eiger_defaults(eiger1m_single)
-
-db.reg.register_handler('AD_EIGER2', EigerHandlerDask, overwrite=True)
 
