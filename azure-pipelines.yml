@@ -7,9 +7,9 @@ resources:
       endpoint: github
 
 jobs:
-  - template: collection-2021-1.0.yml@templates
+  - template: 2022-2.4-py39-tiled.yml@templates
     parameters:
       beamline_acronym: ISR
-  - template: collection-2021-1.2.yml@templates
+  - template: 2022-2.3-py39-tiled.yml@templates
     parameters:
       beamline_acronym: ISR
