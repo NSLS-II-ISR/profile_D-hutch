@@ -31,10 +31,11 @@ class SSASlit(Device):
                   add_prefix=(),
                   read_attrs=['sum_all.mean_value'] + \
                              [f'current{j}.mean_value' for j in range(1, 5)],
+                             lazy=True
                   )
 
 
-ssa = SSASlit('XF:04IDB-OP:1{SSA:1', name='ssa')
+# ssa = SSASlit('XF:04IDB-OP:1{SSA:1', name='ssa')
 
 
 class BPM1(Device):
@@ -59,5 +60,5 @@ class BPM2(Device):
                   )
 
 
-bpm1 = BPM1('XF:04IDA-BI:0{BPM:1_SR1', name='bpm1')
-bpm2 = BPM2('XF:04IDA-BI:1{BPM:2', name='bpm2')
+#bpm1 = BPM1('XF:04IDA-BI:0{BPM:1_SR1', name='bpm1')
+#bpm2 = BPM2('XF:04IDA-BI:1{BPM:2', name='bpm2')
