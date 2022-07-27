@@ -9,11 +9,11 @@ from ophyd import Component as Cpt, Signal
 from ophyd.utils import set_and_wait
 from pathlib import PurePath
 from eiger_io.fs_handler_dask import EigerHandlerDask
-
+from ophyd.areadetector.paths import EpicsPathSignal
 
 class EigerSimulatedFilePlugin(Device, FileStoreBase):
     sequence_id = ADComponent(EpicsSignalRO, 'SequenceId')
-    file_path = ADComponent(EpicsSignalWithRBV, 'FilePath', string=True)
+    file_path = ADComponent(EpicsPathSignal, 'FilePath', string=True, path_semantics='posix')
     file_write_name_pattern = ADComponent(EpicsSignalWithRBV, 'FWNamePattern',
                                           string=True)
     file_write_images_per_file = ADComponent(EpicsSignalWithRBV,
@@ -29,8 +29,8 @@ class EigerSimulatedFilePlugin(Device, FileStoreBase):
     def stage(self):
         res_uid = new_short_uid()
         write_path = datetime.now().strftime(self.write_path_template)
-        set_and_wait(self.file_path, write_path)
-        set_and_wait(self.file_write_name_pattern, '{}_$id'.format(res_uid))
+        self.file_path.set(write_path).wait()
+        self.file_write_name_pattern.set('{}_$id'.format(res_uid)).wait()
         super().stage()
         fn = (PurePath(self.file_path.get()) / res_uid)
         ipf = int(self.file_write_images_per_file.get())
@@ -61,8 +61,8 @@ class EigerBase(AreaDetector):
 
     num_triggers = ADComponent(EpicsSignalWithRBV, 'cam1:NumTriggers')
     file = Cpt(EigerSimulatedFilePlugin, suffix='cam1:',
-               write_path_template='/GPFS/xf04id/DATA/Eiger1M/%Y/%m/%d/',
-               root='/GPFS/xf04id/')
+               write_path_template='/nsls2/data/isr/legacy/DATA_Hutch_D/cam1/%Y/%m/%d/',
+               root='/nsls2/data/isr/legacy/')
 
     beam_center_x = ADComponent(EpicsSignalWithRBV, 'cam1:BeamX')
     beam_center_y = ADComponent(EpicsSignalWithRBV, 'cam1:BeamY')
@@ -91,15 +91,6 @@ class EigerBase(AreaDetector):
     # hotfix: shadow non-existant PV
     size_link = None
 
-    def stage(self):
-        # before parent
-        super().stage()
-        # after parent
-        set_and_wait(self.manual_trigger, 1)
-
-    def unstage(self):
-        set_and_wait(self.manual_trigger, 0)
-        super().unstage()
 
 
 class EigerSingleTrigger(SingleTrigger, EigerBase):
