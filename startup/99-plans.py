@@ -55,7 +55,9 @@ def auto_attenuate(start, stop, steps):
         # If devices is empty, don't emit 'create'/'save' messages.
         if not devices:
             yield from null()
-        devices = bps.separate_devices(devices)  # remove redundant entries
+        devices = bps.separate_devices(
+            devices + attenuators
+        )  # remove redundant entries
         rewindable = bps.all_safe_rewind(devices)  # if devices can be re-triggered
 
         if eiger1m_single in devices:
@@ -65,9 +67,7 @@ def auto_attenuate(start, stop, steps):
             for j in range(16):
                 yield from attenuation_level(j)
                 yield from bps.checkpoint()
-                ret = yield from bps.trigger_and_read(
-                    [eiger1m_single] + attenuators, name="auto_scale"
-                )
+                ret = yield from bps.trigger_and_read(devices, name="auto_scale")
                 if len(ret) == 0:
                     break  # simulation mode
                 # put in better logic!
