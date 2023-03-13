@@ -22,6 +22,7 @@ attenuators = [bank]
 
 
 def auto_attenuate(start, stop, steps):
+    raise NotImplementedError("no brains yet")
 
     def trigger_and_read(devices, name="primary"):
         """
@@ -63,11 +64,9 @@ def auto_attenuate(start, stop, steps):
                     ret[eiger1m_single.stats2.total.name]["value"] > 0
                     or np.random.rand() > 0.5
                 ):
-
                     break
 
         def inner_trigger_and_read():
-
             grp = bps._short_uid("trigger")
             no_wait = True
             for obj in devices:
