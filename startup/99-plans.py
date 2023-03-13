@@ -21,22 +21,8 @@ import bluesky.plans as bp
 attenuators = [bank]
 
 
-def attenuation_level(n):
-
-    s1, s2, s3, s4 = [{"0": "Close", "1": "Open"}[v] for v in format(n, "04b")]
-    yield from bps.mv(
-        bank.attn1,
-        s1,
-        bank.attn2,
-        s2,
-        bank.attn3,
-        s3,
-        bank.attn4,
-        s4,
-    )
-
-
 def auto_attenuate(start, stop, steps):
+
     def trigger_and_read(devices, name="primary"):
         """
         Trigger and read a list of detectors and bundle readings into one Event.
@@ -65,7 +51,7 @@ def auto_attenuate(start, stop, steps):
             # put in all the attenuators
 
             for j in range(16):
-                yield from attenuation_level(j)
+                yield from bank.set_attenuation_level(j)
                 yield from bps.checkpoint()
                 ret = yield from bps.trigger_and_read(devices, name="auto_scale")
                 if len(ret) == 0:
