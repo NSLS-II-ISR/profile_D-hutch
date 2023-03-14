@@ -139,6 +139,7 @@ def set_eiger_defaults(eiger):
     eiger.cam.read_attrs = []
     eiger.cam.configuration_attrs = ["acquire_time", "acquire_period", "num_images"]
     eiger.stats2.total.kind = "hinted"
+    eiger.stats2.max_value.kind = "normal"
 
 
 # Eiger 1M using internal trigger

@@ -25,9 +25,8 @@ import bluesky.plans as bp
 attenuators = [bank]
 
 
-def auto_attenuate(start, stop, steps):
-    raise NotImplementedError("no brains yet")
-
+def auto_attenuate(start, stop, steps, *, mtr=zeta, target='eiger1m_single_stats2_max_value'):
+    attenuator_level = 0
     def trigger_and_read(devices, name="primary"):
         """
         Trigger and read a list of detectors and bundle readings into one Event.
@@ -43,6 +42,8 @@ def auto_attenuate(start, stop, steps):
         msg : Msg
             messages to 'trigger', 'wait' and 'read'
         """
+        nonlocal attenuator_level
+
         # If devices is empty, don't emit 'create'/'save' messages.
         if not devices:
             yield from null()
@@ -54,21 +55,18 @@ def auto_attenuate(start, stop, steps):
         if eiger1m_single in devices:
             # do checks
             # put in all the attenuators
-
-            for j in range(16):
-                yield from bank.set_attenuation_level(j)
-                yield from bps.checkpoint()
-                ret = yield from bps.trigger_and_read(devices, name="auto_scale")
-                if len(ret) == 0:
-                    break  # simulation mode
-                # put in better logic!
-                import numpy as np
-
-                if (
-                    ret[eiger1m_single.stats2.total.name]["value"] > 0
-                    or np.random.rand() > 0.5
-                ):
-                    break
+            
+            yield from bps.checkpoint()
+            ret = yield from bps.trigger_and_read(devices, name="auto_scale")
+            # if len(ret) == 0:
+            # simulation mode
+            # put in better logic
+            if (ret[target]["value"] > 1e5):
+                attenuator_level -= 1  
+            else:
+                attenuator_level += 1
+            print(f'targetting attenuator {attenuator_level}')
+            yield from bank.set_attenuation_level(attenuator_level)  
 
         def inner_trigger_and_read():
             grp = bps._short_uid("trigger")
@@ -115,7 +113,7 @@ def auto_attenuate(start, stop, steps):
         yield from take_reading(list(detectors) + list(motors))
 
     yield from bp.scan(
-        [eiger1m_single] + attenuators, th, start, stop, steps, per_step=one_nd_step
+        [eiger1m_single] + attenuators, mtr, start, stop, steps, per_step=one_nd_step
     )
 
 
