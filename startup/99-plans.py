@@ -1,3 +1,7 @@
+import numpy as np
+import bluesky.plan_stubs as bps
+
+
 # bpp, bp bps already in namespace from 00-base.py
 def look_up_settings(E, station):
     return {dcm.th: 0}
@@ -112,4 +116,62 @@ def auto_attenuate(start, stop, steps):
 
     yield from bp.scan(
         [eiger1m_single] + attenuators, th, start, stop, steps, per_step=one_nd_step
+    )
+
+
+def attenuated_scan(start, stop, steps, *, edges, levels):
+    """
+    Run a 1D scan over th while adjusting the attenuators.
+
+    Parameters
+    ----------
+    start, stop : double
+        The start and stop angles.
+
+        Must fall with in the min/max of *edges*
+
+    steps : int
+        The number of measurements to take.
+
+    edges : array[double]
+        The th values to change the attenuators at.
+
+        Must be monotonic and 1 longer than *levels*
+
+    levels : int [0, 15]
+        The attenuation level.  0 is the most attenuated, 15 is the least.
+    """
+
+    # validate the input
+    if stop < edges[0] or start < edges[0]:
+        raise ValueError(f"{start=} or {stop=} is less than {edges[0]=}")
+    if stop > edges[-1] or start > edges[-1]:
+        raise ValueError(f"{start=} or {stop=} is greater than {edges[-1]=}")
+    if np.any(np.diff(edges) < 0):
+        raise ValueError(f"{edges=} is not monotonic")
+    if len(levels) + 1 != len(edges):
+        raise ValueError(
+            f"edges must be one longer that levels, not {len(edges)=} and {len(levels)=}"
+        )
+
+    def attenuating_nd_step(
+        detectors, step, pos_cache, take_reading=bps.trigger_and_read
+    ):
+        # look up level for this angle and set attenuators
+        yield from bank.set_attenuation_level(
+            levels[np.searchsorted(edges, step[th]) - 1]
+        )
+
+        # run the default step sub-plan
+        yield from bps.one_nd_step(
+            detectors=detectors,
+            step=step,
+            pos_cache=pos_cache,
+            take_reading=take_reading,
+        )
+
+    return (
+        yield from bp.scan(
+            [eiger1m_single, bank], th, start, stop, steps, per_step=attenuating_nd_step
+        )
     )
