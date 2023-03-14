@@ -119,7 +119,7 @@ def auto_attenuate(start, stop, steps):
     )
 
 
-def attenuated_scan(start, stop, steps, *, edges, levels):
+def attenuated_scan(start, stop, steps, *, edges, levels, md=None, mtr=zeta):
     """
     Run a 1D scan over th while adjusting the attenuators.
 
@@ -159,7 +159,7 @@ def attenuated_scan(start, stop, steps, *, edges, levels):
     ):
         # look up level for this angle and set attenuators
         yield from bank.set_attenuation_level(
-            levels[np.searchsorted(edges, step[th]) - 1]
+            levels[np.searchsorted(edges, step[mtr]) - 1]
         )
 
         # run the default step sub-plan
@@ -172,6 +172,9 @@ def attenuated_scan(start, stop, steps, *, edges, levels):
 
     return (
         yield from bp.scan(
-            [eiger1m_single, bank], th, start, stop, steps, per_step=attenuating_nd_step
+            [eiger1m_single, bank], mtr, start, stop, steps, per_step=attenuating_nd_step, md=md
         )
     )
+
+edges =  [-14.6, -15, -15.3, -15.6]
+levels = [8, 0, 8]

@@ -74,7 +74,7 @@ class EigerBase(AreaDetector):
     file = Cpt(
         EigerSimulatedFilePlugin,
         suffix="cam1:",
-        write_path_template="/nsls2/data/isr/legacy/DATA_Hutch_D/cam1/%Y/%m/%d/",
+        write_path_template="/nsls2/data/isr/legacy/DATA_Hutch_D/testing/%Y/%m/%d/",
         root="/nsls2/data/isr/legacy/",
     )
 
